@@ -1,0 +1,44 @@
+﻿<samples>
+  <measurement date="2014-08-10T09:00:00">
+    <param name="temperature">10</param>
+    <param name="pH">4</param>
+    <param name="Phosphate">4</param>
+    <param name="Chloride">4</param>    
+    <param name="Nitrate">10</param>
+  </measurement>
+  <measurement date="2014-08-12T09:05:00">
+    <param name="temperature">10.5</param>
+    <param name="pH">5</param>
+    <param name="Chloride">4</param>
+    <param name="Phosphate">4</param>
+  </measurement>
+  <measurement date="2014-08-14T09:02:00">
+    <param name="temperature">10.8</param>
+    <param name="pH">3</param>
+    <param name="Phosphate">4</param>
+  </measurement>
+  <measurement date="2014-08-16T09:02:00">
+    <param name="temperature">11.2</param>
+    <param name="pH">6</param>
+    <param name="Chloride">4</param>
+  </measurement>
+  <measurement date="2014-08-18T08:58:00">
+    <param name="temperature">10.9</param>
+    <param name="pH">10</param>
+    <param name="Chloride">4</param>
+    <param name="Phosphate">4</param>
+    <param name="Nitrate">10</param>
+  </measurement>
+  <measurement date="2014-08-20T09:10:00">
+    <param name="temperature">9.3</param>
+    <param name="pH">6</param>
+    <param name="Phosphate">4</param>
+  </measurement>
+  <measurement date="2014-08-22T09:01:00">
+    <param name="temperature">9.5</param>
+    <param name="pH">10</param>
+    <param name="Chloride">4</param>
+    <param name="Phosphate">4</param>
+    <param name="Nitrate">10</param>
+  </measurement>
+</samples>
