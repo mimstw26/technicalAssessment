@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CsvHelper;
 using System.IO;
 using CsvHelper.Configuration;
 using System.Data;
 using System.Reflection;
+using System.Threading.Tasks;
+using GeneralKnowledge.Test.App.Classes;
+using System.Configuration;
+using MongoDB.Driver;
 
 namespace GeneralKnowledge.Test.App.Tests
 {
@@ -16,6 +17,7 @@ namespace GeneralKnowledge.Test.App.Tests
     /// </summary>
     public class CsvProcessingTest : ITest
     {
+
         public void Run()
         {
             // TODO: 
@@ -25,38 +27,40 @@ namespace GeneralKnowledge.Test.App.Tests
             // The use of 3rd party plugins is permitted
 
             var csvFile = Resources.AssetImport;
-            readData(csvFile);
+            var results = ReadData(csvFile);
+            //SaveToMongo(results).ConfigureAwait(false);
         }
 
-        public DataTable accessList()
+        public DataTable AccessList()
         {
             var csvFile = Resources.AssetImport;
-            List<csvData> csvDataList = readData(csvFile);
-            DataTable csvDataTable = ToDataTable<csvData>(csvDataList);
+            var csvDataList = ReadData(csvFile);
+            var csvDataTable = ToDataTable(csvDataList);
             return csvDataTable;
-            //return csvDataList;
+            //return CsvDataList;
         }
 
         public static DataTable ToDataTable<T>(List<T> items)
         {
-            DataTable dataTable = new DataTable(typeof(T).Name);
+            var dataTable = new DataTable(typeof(T).Name);
             //Get all the properties
-            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (PropertyInfo prop in Props)
+            var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var prop in props)
             {
                 //Defining type of data column gives proper data table 
                 var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof
                     (Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
                 //Setting column names as Property names
-                dataTable.Columns.Add(prop.Name, type);
+                if(type != null)
+                    dataTable.Columns.Add(prop.Name, type);
             }
-            foreach (T item in items)
+            foreach (var item in items)
             {
-                var values = new object[Props.Length];
-                for (int i = 0; i < Props.Length; i++)
+                var values = new object[props.Length];
+                for (var i = 0; i < props.Length; i++)
                 {
                     //inserting property values to datatable rows
-                    values[i] = Props[i].GetValue(item, null);
+                    values[i] = props[i].GetValue(item, null);
                 }
                 dataTable.Rows.Add(values);
             }
@@ -65,25 +69,26 @@ namespace GeneralKnowledge.Test.App.Tests
         }
 
 
-        public List<csvData> readData(string csvFile)
+        public List<CsvData> ReadData(string csvFile)
         {
-            List<csvData> resultList = new List<csvData>();
             // these are for testing
             //using(TextReader fileReader = File.OpenText(@"C:\Documents\dotNET developer\dotNET developer\GeneralKnowledge.Test\Resources\AssetImport.csv")){
             //var csvRead = new CsvReader(fileReader);
 
             // this works by creating reader that reads through the csvFile (which is now a string)
             // then using the CsvReader from CsvHelper (https://joshclose.github.io/CsvHelper/) to quickly parse and read the data
+
+            var resultList = new List<CsvData>();
             using (var reader = new StringReader(csvFile))
             {
                 var csvRead = new CsvReader(reader);
                 csvRead.Configuration.HasHeaderRecord = true;
-                csvRead.Configuration.RegisterClassMap<CSVFileDefinitionMap>();
+                csvRead.Configuration.RegisterClassMap<CsvFileDefinitionMap>();
 
                 while (csvRead.Read())
                 {
-                    //var record = csvRead.GetRecord<csvData>().; // how to add this to a list or map or something?
-                    var results = csvRead.GetRecord<csvData>();
+                    //var record = csvRead.GetRecord<CsvData>().; // how to add this to a list or map or something?
+                    var results = csvRead.GetRecord<CsvData>();
                     resultList.Add(results);
                     //myMap.PropertyMap.
                 }
@@ -91,23 +96,28 @@ namespace GeneralKnowledge.Test.App.Tests
             }
         }
 
-        // store the data in list of class csvData for easy organization
-        public class csvData
+        // using csvHelper
+        private sealed class CsvFileDefinitionMap : CsvClassMap<CsvData>
         {
-            public string asset { get; set; }
-            public string country { get; set; }
-            public string mimeType { get; set; }
+            public CsvFileDefinitionMap()
+            {
+                Map(m => m.Asset).Name("asset id");
+                Map(m => m.Country).Name("country");
+                Map(m => m.MimeType).Name("mime_type");
+            }
         }
 
-        // using csvHelper
-        sealed class CSVFileDefinitionMap : CsvClassMap<csvData>
+        public async Task SaveToMongo(List<CsvData> results)
         {
-            public CSVFileDefinitionMap()
+            if (results != null && results.Count != 0)
             {
-                Map(m => m.asset).Name("asset id");
-                Map(m => m.country).Name("country");
-                Map(m => m.mimeType).Name("mime_type");
+                var client = new MongoClient(ConfigurationManager.AppSettings["mongoConnection"]);
+                var database = client.GetDatabase("TechAssDb");
+
+                var assets = database?.GetCollection<CsvData>("Assets");
+                if (assets != null) await assets.InsertManyAsync(results).ConfigureAwait(false);
             }
+
         }
     }
 }

@@ -34,22 +34,22 @@ namespace GeneralKnowledge.Test.App.Tests
 
         private void PrintOverview(string xml)
         {
-            XmlDocument xmlDoc = new XmlDocument();
+            var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xml);
 
             // goes through the nodes of the xml document and looks into each measurement block to view the params.
             // from there, it is able to create the node list by grabbing all params that match the unique given name.
-            XmlNodeList temperatures = xmlDoc.SelectNodes("/samples/measurement/param[@name='temperature']");
-            XmlNodeList pHs = xmlDoc.SelectNodes("/samples/measurement/param[@name='pH']");
-            XmlNodeList phosphates = xmlDoc.SelectNodes("/samples/measurement/param[@name='Phosphate']");
-            XmlNodeList chlorides = xmlDoc.SelectNodes("/samples/measurement/param[@name='Chloride']");
-            XmlNodeList nitrates = xmlDoc.SelectNodes("/samples/measurement/param[@name='Nitrate']");
+            var temperatures = xmlDoc.SelectNodes("/samples/measurement/param[@name='temperature']");
+            var pHs = xmlDoc.SelectNodes("/samples/measurement/param[@name='pH']");
+            var phosphates = xmlDoc.SelectNodes("/samples/measurement/param[@name='Phosphate']");
+            var chlorides = xmlDoc.SelectNodes("/samples/measurement/param[@name='Chloride']");
+            var nitrates = xmlDoc.SelectNodes("/samples/measurement/param[@name='Nitrate']");
 
-            double temperatureMax = getMax(temperatures);
-            double phsMax = getMax(pHs);
-            double phosphatesMax = getMax(phosphates);
-            double chloridesMax = getMax(chlorides);
-            double nitratesMax = getMax(nitrates);
+            var temperatureMax = getMax(temperatures);
+            var phsMax = getMax(pHs);
+            var phosphatesMax = getMax(phosphates);
+            var chloridesMax = getMax(chlorides);
+            var nitratesMax = getMax(nitrates);
 
             double temperatureMin = getMin(temperatures, temperatureMax);
             double phsMin = getMin(pHs, phsMax);
@@ -88,7 +88,8 @@ namespace GeneralKnowledge.Test.App.Tests
                 if (i == 0)
                     max = doubleStatsValue;
 
-                else {
+                else
+                {
                     if (doubleStatsValue > max)
                         max = doubleStatsValue;
                 }

@@ -15,7 +15,7 @@ namespace WebExperience.Test
             string connString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
             string sqlStr = "select top 10 * from assetTable";
             var csvProcessing = new CsvProcessingTest();
-            DataTable csvDataTable = csvProcessing.accessList();
+            DataTable csvDataTable = csvProcessing.AccessList();
 
             try
             {
@@ -50,7 +50,9 @@ namespace WebExperience.Test
             {
                 try
                 {
-                    SqlBulkCopy bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.FireTriggers | SqlBulkCopyOptions.UseInternalTransaction, null);
+                    SqlBulkCopy bulkCopy = new SqlBulkCopy(connection,
+                        SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.FireTriggers |
+                        SqlBulkCopyOptions.UseInternalTransaction, null);
 
                     bulkCopy.DestinationTableName = "assetTable";
 
